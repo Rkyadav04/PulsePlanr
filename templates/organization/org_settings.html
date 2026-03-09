@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Organization Settings - {{ org.name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="p-4 bg-light">
+
+<div class="container">
+
+    <h1>Organization Settings</h1>
+
+    <hr>
+
+    <!-- UPDATE ORG DETAILS -->
+    <h3>Edit Organization</h3>
+
+    <form method="POST" action="/organization/{{ org.id }}/settings/update/">
+        {% csrf_token %}
+        <label>Name</label>
+        <input name="name" class="form-control" value="{{ org.name }}" required>
+
+        <label class="mt-3">Description</label>
+        <textarea name="description" class="form-control">{{ org.description }}</textarea>
+
+        <button class="btn btn-primary mt-3">Save</button>
+    </form>
+
+    <hr>
+
+    <!-- MEMBER LIST -->
+    <h3>Members</h3>
+
+    <table class="table table-bordered mt-3">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Change Role</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for m in members %}
+            <tr>
+                <td>{{ m.user.username }}</td>
+                <td>{{ m.user.email }}</td>
+                <td>{{ m.role }}</td>
+
+                <td>
+                    {% if m.user != request.user %}
+                    <form method="POST" action="/organization/{{ org.id }}/settings/role/{{ m.user.id }}/">
+                        {% csrf_token %}
+                        <select name="role" class="form-select form-select-sm">
+                            <option value="manager">Manager</option>
+                            <option value="employee">Employee</option>
+                        </select>
+                        <button class="btn btn-sm btn-success mt-1">Update</button>
+                    </form>
+                    {% else %}
+                      <small>(You)</small>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <hr>
+
+    <!-- DELETE ORG -->
+    <h3 class="text-danger">Delete Organization</h3>
+
+    <form method="POST" action="/organization/{{ org.id }}/settings/delete/">
+        {% csrf_token %}
+        <button class="btn btn-danger" onclick="return confirm('Delete organization permanently?')">
+            Delete Organization
+        </button>
+    </form>
+
+    <a href="/organization/{{ org.id }}/" class="btn btn-secondary mt-4">Back</a>
+</div>
+</body>
+</html>

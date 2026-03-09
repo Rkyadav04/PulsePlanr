@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | PulsePlanr{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">Welcome back, {{ user.username }}</h3>
+
+<!-- ===== QUICK ACTIONS ===== -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body d-flex flex-wrap gap-2">
+
+                <a href="{% url 'create_organization' %}" class="btn btn-primary">
+                    + Create Organization
+                </a>
+
+                <a href="#owned-orgs" class="btn btn-outline-primary">
+                    My Organizations
+                </a>
+
+                <a href="#invites-received" class="btn btn-outline-success">
+                    Pending Invites
+                </a>
+
+                <a href="#invites-sent" class="btn btn-outline-secondary">
+                    Sent Invites
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== OWNED ORGANIZATIONS ===== -->
+<div class="card shadow-sm mb-4" id="owned-orgs">
+    <div class="card-header bg-primary text-white d-flex justify-content-between">
+        <strong>Organizations You Own</strong>
+    </div>
+
+    <div class="card-body">
+        {% if owned_orgs %}
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Members</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for org in owned_orgs %}
+                <tr>
+                    <td>{{ org.name }}</td>
+                    <td>
+                        {{ org.membership_set.count }}
+                    </td>
+                    <td>
+                        <a href="{% url 'org_dashboard' org.id %}" class="btn btn-sm btn-outline-primary">
+                            Open
+                            {% for membership in memberships %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5>{{ membership.organization.name }}</h5>
+
+                                    {% if membership.role == "admin" or membership.role == "manager" %}
+                                    <a href="{% url 'org_dashboard' membership.organization.id %}"
+                                        class="btn btn-outline-primary btn-sm">
+                                        Open Dashboard
+                                    </a>
+
+                                    <a href="{% url 'invite_member' org.id %}" class="btn btn-sm btn-primary">
+                                        Invite Member
+                                    </a>
+
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">
+            You don’t own any organizations yet.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ===== MEMBER ORGANIZATIONS ===== -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white">
+        <strong>Organizations You Belong To</strong>
+    </div>
+
+    <div class="card-body">
+        {% if memberships %}
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Organization</th>
+                    <th>Your Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for membership in memberships %}
+                <tr>
+                    <td>{{ membership.organization.name }}</td>
+                    <td>{{ membership.role|title }}</td>
+                    <td>
+                        <a href="{% url 'org_dashboard' membership.organization.id %}"
+                            class="btn btn-sm btn-outline-success">
+                            Open
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">
+            You are not part of any organization yet.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ===== RECEIVED INVITES ===== -->
+<div class="card shadow-sm mb-4" id="invites-received">
+    <div class="card-header bg-warning">
+        <strong>Pending Invitations</strong>
+    </div>
+
+    <div class="card-body">
+        {% if received_invites %}
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Organization</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invite in received_invites %}
+                <tr>
+                    <td>{{ invite.organization.name }}</td>
+                    <td>{{ invite.role|title }}</td>
+                    <td>
+                        <a href="{% url 'accept_invite' invite.token %}" class="btn btn-sm btn-outline-success">
+                            Accept
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">
+            No pending invitations.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ===== SENT INVITES ===== -->
+<div class="card shadow-sm mb-4" id="invites-sent">
+    <div class="card-header bg-secondary text-white">
+        <strong>Invitations You Sent</strong>
+    </div>
+
+    <div class="card-body">
+        {% if sent_invites %}
+        <table class="table table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Email</th>
+                    <th>Organization</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invite in sent_invites %}
+                <tr>
+                    <td>{{ invite.email }}</td>
+                    <td>{{ invite.organization.name }}</td>
+                    <td>{{ invite.role|title }}</td>
+                    <td>
+                        {% if invite.accepted %}
+                        <span class="badge bg-success">Accepted</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="text-muted mb-0">
+            You haven’t sent any invitations yet.
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<h2>Your Organizations</h2>
+
+{% if memberships %}
+<ul class="list-group">
+    {% for m in memberships %}
+    <li class="list-group-item d-flex justify-content-between">
+        <div>
+            <strong>{{ m.organization.name }}</strong><br>
+            <small>Role: {{ m.role|title }}</small>
+        </div>
+        <a href="{% url 'org_dashboard' m.organization.id %}" class="btn btn-sm btn-primary">
+            Open
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>You are not part of any organization yet.</p>
+{% endif %}
+
+{% endblock %}

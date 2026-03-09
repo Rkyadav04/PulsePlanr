@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">{{ organization.name }}</h2>
+            <span class="badge 
+                {% if role == 'admin' %}badge-role-admin
+                {% elif role == 'manager' %}badge-role-manager
+                {% else %}badge-role-employee{% endif %}">
+                {{ role|title }}
+            </span>
+        </div>
+
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card card-soft metric-card">
+                <div class="card-body">
+                    <small class="text-muted">Total Members</small>
+                    <h3>{{ members|length }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-soft metric-card">
+                <div class="card-body">
+                    <small class="text-muted">Pending Invites</small>
+                    <h3>{{ pending_invites_count }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-soft metric-card">
+                <div class="card-body">
+                    <small class="text-muted">Created On</small>
+                    <h5 class="fw-bold">
+                        {{ organization.created_at|date:"d M Y" }}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    {% if role == "admin" or role == "manager" %}
+    <div class="card card-soft mb-4">
+        <div class="card-body">
+            <h6 class="fw-bold mb-3">Quick Actions</h6>
+
+            <div class="d-flex gap-3 flex-wrap">
+                <a href="{% url 'invite_member' organization.id %}"
+                   class="btn btn-primary btn-soft">
+                    Invite Member
+                </a>
+
+                <a href="{% url 'pending_invites' organization.id %}"
+                   class="btn btn-outline-primary btn-soft">
+                    Pending Invites
+                </a>
+
+                {% if role == "admin" %}
+                <button class="btn btn-outline-danger btn-soft" disabled>
+                    Organization Settings
+                </button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Members Table -->
+    <div class="card card-soft">
+        <div class="card-body">
+            <h5 class="fw-bold mb-3">Team Members</h5>
+
+            <div class="table-responsive">
+                <table class="table table-clean">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            {% if role == "admin" %}
+                            <th class="text-end">Action</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in members %}
+                        <tr>
+                            <td>
+                                <strong>{{ m.user.username }}</strong><br>
+                                <small class="text-muted">{{ m.user.email }}</small>
+                            </td>
+
+                            <td>
+                                <span class="badge 
+                                    {% if m.role == 'admin' %}badge-role-admin
+                                    {% elif m.role == 'manager' %}badge-role-manager
+                                    {% else %}badge-role-employee{% endif %}">
+                                    {{ m.role|title }}
+                                </span>
+                            </td>
+
+                            <td>{{ m.joined_at|date:"d M Y" }}</td>
+
+                            {% if role == "admin" %}
+                            <td class="text-end">
+                                {% if m.user != request.user %}
+                                <a href="{% url 'remove_member' organization.id m.user.id %}"
+                                   class="btn btn-sm btn-outline-danger">
+                                    Remove
+                                </a>
+                                {% else %}
+                                <span class="text-muted">You</span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

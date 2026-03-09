@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Pending Invitations</h2>
+    <p class="text-muted">
+        Organization: <strong>{{ organization.name }}</strong>
+    </p>
+
+    {% if invites %}
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Invited By</th>
+                    <th>Sent On</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invite in invites %}
+                <tr>
+                    <td>{{ invite.email }}</td>
+                    <td>{{ invite.role|title }}</td>
+                    <td>{{ invite.invited_by.username }}</td>
+                    <td>{{ invite.created_at|date:"d M Y" }}</td>
+                    <td>
+                        {% if invite.expires_at %}
+                            {% if invite.expires_at < now %}
+                                <span class="text-danger">Expired</span>
+                            {% else %}
+                                <span class="text-warning">Pending</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-warning">Pending</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info mt-3">
+            No pending invitations.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'org_dashboard' organization.id %}"
+       class="btn btn-secondary mt-3">
+        Back to Dashboard
+    </a>
+</div>
+{% endblock %}

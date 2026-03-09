@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .profile-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #ccc;
+        }
+    </style>
+</head>
+
+<body class="bg-light p-4">
+
+<div class="container">
+
+    <h2 class="mb-4">My Profile</h2>
+
+    <div class="row">
+
+        <!-- LEFT SIDE: Avatar + User Info -->
+        <div class="col-md-4 mb-4">
+            <div class="card p-3 text-center">
+
+                {% if user.avatar %}
+                <img src="{{ user.avatar.url }}" class="profile-avatar mb-3" alt="Profile Picture">
+                {% else %}
+                <img src="https://via.placeholder.com/130" class="profile-avatar mb-3" alt="Profile Picture">
+                {% endif %}
+
+                <h4>{{ user.username }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+            </div>
+
+
+            <!-- Organizations List -->
+            <div class="card mt-3 p-3">
+                <h5>Your Organizations</h5>
+                <ul class="list-group">
+                    {% for m in orgs %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            {{ m.organization.name }}
+                            <span class="badge bg-info">{{ m.role }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No organizations yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+
+
+        <!-- RIGHT SIDE: Profile Edit Form -->
+        <div class="col-md-8">
+            <div class="card p-4">
+
+                <h4>Edit Profile</h4>
+                <hr>
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label>Username</label>
+                        {{ form.username }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Email</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Phone</label>
+                        {{ form.phone }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Avatar</label>
+                        {{ form.avatar }}
+                    </div>
+
+                    <button class="btn btn-primary mt-2">Save Changes</button>
+                </form>
+
+                <hr>
+
+                <a href="/password-reset/" class="btn btn-outline-secondary mt-2">Change Password</a>
+
+                <a href="/dashboard/" class="btn btn-secondary mt-2">Back</a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

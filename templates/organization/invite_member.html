@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Invite Member{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h3 class="fw-bold mb-3">
+        Invite member to {{ organization.name }}
+    </h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            {{ form.email }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            {{ form.role }}
+        </div>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <button class="btn btn-primary">
+            Send Invite
+        </button>
+
+        <a href="{% url 'org_dashboard' organization.id %}" class="btn btn-secondary">
+            Cancel
+        </a>
+    </form>
+</div>
+{% endblock %}
