@@ -33,7 +33,7 @@ This project demonstrates **full-stack web development using Django**, including
 
 ### Database
 
-* SQLite / MySQL
+* MySQL
 
 ### Version Control
 
@@ -77,7 +77,7 @@ PulsePlanr/
 ## 1️⃣ Clone the repository
 
 ```
-git clone https://github.com/YOUR_USERNAME/PulsePlanr.git
+git clone https://github.com/Rkyadav04/PulsePlanr.git
 ```
 
 ---
@@ -144,20 +144,6 @@ python manage.py runserver
 http://127.0.0.1:8000/
 ```
 
----
-
-# 📸 Screenshots
-
-You can add screenshots of your project here.
-
-Example:
-
-```
-screenshots/dashboard.png
-screenshots/task_page.png
-```
-
----
 
 # 🎯 Future Improvements
 
@@ -171,7 +157,7 @@ screenshots/task_page.png
 
 # 👨‍💻 Author
 
-**Ravinder Kumar Yadav**
+Ravinder Kumar
 
 GitHub:
 https://github.com/Rkyadav04
@@ -180,4 +166,4 @@ https://github.com/Rkyadav04
 
 # ⭐ Support
 
-If you like this project, consider giving it a **⭐ star on GitHub**.
+If you like this project, consider giving it a ⭐ star on GitHub.
